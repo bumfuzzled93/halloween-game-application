@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS `redemption`
     int,
     `staff_id`
     int,
-    `photo`
+    `photo_path`
     varchar
 (
-    50
+    255
 ),
     `amount` int,
     `redemption_status` ENUM
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `redemption`
     'REDEEMED'
 ),
     `create_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
-    `update_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP
+    `modified_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP
     );
 
 CREATE TABLE IF NOT EXISTS `staff`
@@ -45,36 +45,6 @@ CREATE TABLE IF NOT EXISTS `staff`
 (
     255
 ) NOT NULL,
-    `create_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
-    `update_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP
-    );
-
-CREATE TABLE IF NOT EXISTS `user`
-(
-    `id`
-    int
-    NOT
-    NULL
-    AUTO_INCREMENT
-    PRIMARY
-    KEY,
-    `email`
-    varchar
-(
-    255
-),
-    `phone_number` varchar
-(
-    50
-),
-    `password` varchar
-(
-    255
-),
-    `display name` varchar
-(
-    255
-),
     `create_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP,
     `update_timestamp` timestamp DEFAULT CURRENT_TIMESTAMP
     );
@@ -108,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `game`
     int,
     `start_time_seconds`
     int,
-    `current_time`
+    `current_time_seconds`
     int,
     `ghost_killed`
     int,
