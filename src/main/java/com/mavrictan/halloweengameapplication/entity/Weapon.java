@@ -8,12 +8,15 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Player {
-
+public class Weapon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String userName;
-    private String mobileNumber;
+    private int upgrade;
+    private String weaponName;
+    private double killChance;
+    private int ammo;
+    private int reloadSec;
+    private int cooldownSec;
 }

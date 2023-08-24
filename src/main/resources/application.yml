@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./halloween_h2_db
+    url: jdbc:h2:mem:testdb
     username: sa
-    password: password
+    password:
     driverClassName: org.h2.Driver
   h2:
     console:
       enabled: true
-
   jpa:
     hibernate:
-      ddl-auto: create-drop # for h2 sequence table
+      ddl-auto: none # for h2 sequence table
+    show-sql: true
