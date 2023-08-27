@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalTime;
 
 @RestController
+@RequestMapping(path = "misc")
 public class MiscController {
 
     @RequestMapping(value = "/serverTime", method = RequestMethod.GET, produces = "text/plain")

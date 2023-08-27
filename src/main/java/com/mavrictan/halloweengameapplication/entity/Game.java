@@ -1,10 +1,9 @@
 package com.mavrictan.halloweengameapplication.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -21,4 +20,10 @@ public class Game {
     private int ghostKilled;
     private double score;
 
+    @ManyToMany
+    @JoinTable(
+            name = "game_player",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "player_id"))
+    private List<Player> playersList;
 }

@@ -35,8 +35,10 @@ CREATE TABLE IF NOT EXISTS `game`
 CREATE TABLE IF NOT EXISTS `player`
 (
     `id`            int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `player_name`   varchar(255),
-    `mobile_number` varchar(8)
+    `username`      varchar(255) NOT NULL UNIQUE,
+    `mobile_number` varchar(8),
+    `score`         int     default 0,
+    `hasSpecial`    boolean default false
 );
 
 CREATE TABLE IF NOT EXISTS `weapon`

@@ -9,5 +9,9 @@ spring:
       enabled: true
   jpa:
     hibernate:
-      ddl-auto: none # for h2 sequence table
+      ddl-auto: update # for h2 sequence table
     show-sql: true
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+

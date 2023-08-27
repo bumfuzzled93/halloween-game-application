@@ -1,10 +1,9 @@
 package com.mavrictan.halloweengameapplication.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -14,6 +13,21 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String userName;
+    private String username;
     private String mobileNumber;
+    private int score;
+    private int credits;
+    private boolean withSpecial;
+
+    @ManyToMany
+    @JoinTable(
+            name = "player_weapon",
+            joinColumns = @JoinColumn(name = "played_id"),
+            inverseJoinColumns = @JoinColumn(name = "weapon_id"))
+    private List<Weapon> purchasedWeapons;
+
+    public Player(String username, String mobileNumber) {
+        this.username = username;
+        this.mobileNumber = mobileNumber;
+    }
 }
