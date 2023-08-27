@@ -52,23 +52,30 @@ public class ApiController {
     public ResponseEntity<?> startGame(@RequestParam Long gameId, @RequestParam List<Long> playerIds) {
         List<Player> gamePlayers = new ArrayList<>();
 
-        playerIds.forEach(id -> {
-            playerRepository.findById(id).map(gamePlayers::add);
-        });
+        playerIds.forEach(id -> playerRepository.findById(id).map(gamePlayers::add));
 
         return gameRepository.findById(gameId)
                 .map(game -> {
                     game.setPlayersList(gamePlayers);
                     return new ResponseEntity<>(gameRepository.save(game), HttpStatus.OK);
                 })
-                .orElse(
-                        new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @RequestMapping(value = "/endGame", method = RequestMethod.POST)
-    public ResponseEntity<?> endGame(@RequestParam Long gameId, @RequestParam Long score, @RequestParam List<Long> playerBombUsed) {
+    public ResponseEntity<?> endGame(@RequestParam Long gameId, @RequestParam int score, @RequestParam List<Long> playerSpecialUsed) {
         return gameRepository.findById(gameId)
-                .map(game -> new ResponseEntity(game, HttpStatus.OK))
+                .map(game -> {
+                    for (Player player : game.getPlayersList()) {
+                        player.setScore(player.getScore() + score);
+                        if (playerSpecialUsed.contains(player.getId())) {
+                            player.setWithSpecial(false);
+                        }
+                        playerRepository.save(player);
+                    }
+
+                    return new ResponseEntity(game, HttpStatus.OK);
+                })
                 .orElse(new ResponseEntity("Invalid gameId", HttpStatus.NOT_FOUND));
     }
 
