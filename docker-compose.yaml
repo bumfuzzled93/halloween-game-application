@@ -1,0 +1,25 @@
+services:
+  mysql-db:
+    image: mysql
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: dummy
+      MYSQL_DATABASE: halloween-app
+      MYSQL_USER: dummy
+      MYSQL_PASSWORD: dummy
+    cap_add:
+      - SYS_NICE
+    restart: no
+    ports:
+      - '3306:3306' # jdbc access
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  api:
+    build: .
+    container_name: halloween-game-app
+    ports:
+      - '8080:8080'
+    restart: on-failure
+    depends_on:
+      - mysql-db

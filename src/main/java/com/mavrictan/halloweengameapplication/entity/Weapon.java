@@ -1,22 +1,23 @@
 package com.mavrictan.halloweengameapplication.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
 public class Weapon {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private int upgrade;
     private String weaponName;
-    private double killChance;
-    private int ammo;
-    private int reloadSec;
-    private int cooldownSec;
+    private int cost;
+
+    @OneToMany(mappedBy = "weapon")
+    @JsonIgnore
+    private List<PlayerWeapon> playerWeapons;
 }

@@ -1,16 +1,16 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driverClassName: org.h2.Driver
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/halloween-app
+    username: dummy
+    password: dummy
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    hibernate:
-      ddl-auto: update # for h2 sequence table
     show-sql: true
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: false
+    generate-ddl: false
 springdoc:
   swagger-ui:
     tags-sorter: alpha

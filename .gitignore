@@ -2,6 +2,7 @@
 build/
 .gradle/
 .idea/
+docker/
 
 # Compiled class file
 *.class
@@ -27,3 +28,4 @@ build/
 hs_err_pid*
 replay_pid*
 /halloween_h2_db.mv.db
+

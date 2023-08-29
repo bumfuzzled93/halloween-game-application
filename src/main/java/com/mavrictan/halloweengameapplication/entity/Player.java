@@ -1,33 +1,33 @@
 package com.mavrictan.halloweengameapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Player {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String username;
     private String mobileNumber;
-    private int score;
+    private String email;
     private int credits;
-    private boolean withSpecial;
 
-    @ManyToMany
-    @JoinTable(
-            name = "player_weapon",
-            joinColumns = @JoinColumn(name = "played_id"),
-            inverseJoinColumns = @JoinColumn(name = "weapon_id"))
-    private List<Weapon> purchasedWeapons;
+    private int powerupAmmoBox;
+    private int powerupDrone;
+    private int powerupBonus;
 
-    public Player(String username, String mobileNumber) {
-        this.username = username;
-        this.mobileNumber = mobileNumber;
-    }
+    private boolean starterPackClaimed;
+
+    @OneToMany(mappedBy = "player")
+    @Singular
+    private List<PlayerWeapon> purchasedWeapons;
 }

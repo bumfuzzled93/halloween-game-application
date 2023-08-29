@@ -1,22 +1,26 @@
 package com.mavrictan.halloweengameapplication.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Game {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String photonId;
     private int gameLengthSeconds;
-    private int startTimeSeconds;
-    private int currentTimeSeconds;
-    private boolean ghostHourActive;
-    private boolean ghostHourEndTime;
+    private long startTimeSeconds;
     private int ghostKilled;
     private double score;
 

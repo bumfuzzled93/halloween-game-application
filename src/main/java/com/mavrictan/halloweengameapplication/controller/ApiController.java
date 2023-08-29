@@ -1,9 +1,8 @@
 package com.mavrictan.halloweengameapplication.controller;
 
 import com.mavrictan.halloweengameapplication.entity.Game;
-import com.mavrictan.halloweengameapplication.entity.Player;
-import com.mavrictan.halloweengameapplication.repository.GameRepository;
-import com.mavrictan.halloweengameapplication.repository.PlayerRepository;
+import com.mavrictan.halloweengameapplication.service.GameService;
+import com.mavrictan.halloweengameapplication.service.PlayerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,75 +20,68 @@ import java.util.List;
 @AllArgsConstructor
 public class ApiController {
 
-    private PlayerRepository playerRepository;
+    private PlayerService playerService;
 
-    private GameRepository gameRepository;
+    private GameService gameService;
 
-    @RequestMapping(value = "/getPlayer", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
     public ResponseEntity<?> getPlayerByUsername(@RequestParam String username) {
-        if (username == null || username.isEmpty()) {
-            return new ResponseEntity<>(
-                    "Please provide valid username or playerId",
-                    HttpStatus.BAD_REQUEST);
-        }
+        return playerService.getPlayerByUsername(username)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
-        return playerRepository.findByUsername(username).map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+    @RequestMapping(value = "/getPlayerByMobileNumber", method = RequestMethod.GET)
+    public ResponseEntity<?> getPlayerByMobileNumber(@RequestParam String mobileNumber) {
+        return playerService.getPlayerByMobileNumber(mobileNumber)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @RequestMapping(value = "/createPlayer", method = RequestMethod.POST)
-    public ResponseEntity<?> createPlayer(@RequestParam String playerUsername, @RequestParam String mobileNumber) {
-        return new ResponseEntity<>(playerRepository.save(new Player(playerUsername, mobileNumber)), HttpStatus.OK);
+    public ResponseEntity<?> createPlayer(@RequestParam String playerUsername,
+                                          @RequestParam String mobileNumber,
+                                          @RequestParam String email) {
+        return playerService.createPlayer(playerUsername, mobileNumber, email)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @RequestMapping(value = "/createGame", method = RequestMethod.POST)
-    public ResponseEntity<Game> createGame() {
-        return ResponseEntity.ok(gameRepository.save(new Game()));
+    public ResponseEntity<Game> createGame(String photonId) {
+        return ResponseEntity.ok(gameService.createGame(photonId));
     }
 
     @RequestMapping(value = "/startGame", method = RequestMethod.POST)
-    public ResponseEntity<?> startGame(@RequestParam Long gameId, @RequestParam List<Long> playerIds) {
-        List<Player> gamePlayers = new ArrayList<>();
-
-        playerIds.forEach(id -> playerRepository.findById(id).map(gamePlayers::add));
-
-        return gameRepository.findById(gameId)
-                .map(game -> {
-                    game.setPlayersList(gamePlayers);
-                    return new ResponseEntity<>(gameRepository.save(game), HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<?> startGame(@RequestParam String photonId, @RequestParam List<Long> playerIds) throws Exception {
+        return gameService.startGame(photonId, playerIds)
+                .map(game -> new ResponseEntity<>(game, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @RequestMapping(value = "/endGame", method = RequestMethod.POST)
-    public ResponseEntity<?> endGame(@RequestParam Long gameId, @RequestParam int score, @RequestParam List<Long> playerSpecialUsed) {
-        return gameRepository.findById(gameId)
-                .map(game -> {
-                    for (Player player : game.getPlayersList()) {
-                        player.setScore(player.getScore() + score);
-                        if (playerSpecialUsed.contains(player.getId())) {
-                            player.setWithSpecial(false);
-                        }
-                        playerRepository.save(player);
-                    }
-
-                    return new ResponseEntity(game, HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity("Invalid gameId", HttpStatus.NOT_FOUND));
+    public ResponseEntity<?> endGame(@RequestParam String photonId,
+                                     @RequestParam List<Long> playerIds,
+                                     @RequestParam int score) throws Exception {
+        return gameService.endGame(photonId, playerIds, score)
+                .map(game -> new ResponseEntity<>(game, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @RequestMapping(value = "/purchaseWeapon", method = RequestMethod.POST)
-    public ResponseEntity<Player> purchaseItem(@RequestParam Long playerId, @RequestParam Long weaponId) {
-        return ResponseEntity.ok(playerRepository.findById(playerId).get());
+    public ResponseEntity<?> purchaseWeapon(@RequestParam Long playerId, @RequestParam Long weaponId) throws Exception {
+        return playerService.purchaseWeapon(playerId, weaponId)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
-    @RequestMapping(value = "/equipLoadout", method = RequestMethod.POST)
-    public ResponseEntity<Player> equipLoadout(@RequestParam Long playerId, @RequestParam Long weaponId) {
-        return ResponseEntity.ok(playerRepository.findById(playerId).get());
-    }
-
-    @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
-    public ResponseEntity<Player> upgradeWeapon(@RequestParam Long playerId, @RequestParam Long weaponId) {
-        return ResponseEntity.ok(playerRepository.findById(playerId).get());
-    }
+//
+//    @RequestMapping(value = "/equipLoadout", method = RequestMethod.POST)
+//    public ResponseEntity<Player> equipLoadout(@RequestParam Long playerId, @RequestParam Long weaponId) {
+//        return ResponseEntity.ok(playerRepository.findById(playerId).get());
+//    }
+//
+//    @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
+//    public ResponseEntity<Player> upgradeWeapon(@RequestParam Long playerId, @RequestParam Long weaponId) {
+//        return ResponseEntity.ok(playerRepository.findById(playerId).get());
+//    }
 }
