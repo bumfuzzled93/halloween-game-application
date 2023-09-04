@@ -8,11 +8,18 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Staff {
+public class Redemption {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String username;
-    private String password;
+    private int userId;
+    private int staffId;
+    private String photoPath;
+    private int amount;
+    private int creditsIssued;
+    private String redemptionStatus;
+    private long createTimestamp;
+    private long modifiedTimestamp;
 }
