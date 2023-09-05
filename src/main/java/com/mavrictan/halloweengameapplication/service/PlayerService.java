@@ -3,7 +3,10 @@ package com.mavrictan.halloweengameapplication.service;
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.PlayerWeapon;
 import com.mavrictan.halloweengameapplication.entity.Weapon;
+import com.mavrictan.halloweengameapplication.exception.BadRequestException;
 import com.mavrictan.halloweengameapplication.exception.DuplicatedEntityException;
+import com.mavrictan.halloweengameapplication.exception.NoSuchPlayerException;
+import com.mavrictan.halloweengameapplication.exception.NoSuchWeaponException;
 import com.mavrictan.halloweengameapplication.repository.PlayerRepository;
 import com.mavrictan.halloweengameapplication.repository.PlayerWeaponRepository;
 import com.mavrictan.halloweengameapplication.repository.WeaponRepository;
@@ -35,11 +38,14 @@ public class PlayerService {
     }
 
     public Optional<Player> getPlayerByUsername(String username) {
-        return playerRepository.findByUsername(username);
+
+        return Optional.ofNullable(playerRepository.findByUsername(username)
+                .orElseThrow(NoSuchPlayerException::new));
     }
 
     public Optional<Player> getPlayerByMobileNumber(String mobileNumber) {
-        return playerRepository.findByMobileNumber(mobileNumber);
+        return Optional.ofNullable(playerRepository.findByMobileNumber(mobileNumber)
+                .orElseThrow(NoSuchPlayerException::new));
     }
 
     public List<Player> getPlayers(List<Long> playerIds) {
@@ -47,21 +53,24 @@ public class PlayerService {
     }
 
     public Optional<Player> updatePlayerScore(Long playerid, int score) {
-        return playerRepository.findById(playerid)
+        return Optional.ofNullable(playerRepository.findById(playerid)
                 .map(player -> {
                     player.setCredits(player.getCredits() + score);
                     return playerRepository.save(player);
-                });
+                }).orElseThrow(NoSuchPlayerException::new));
     }
 
     public Optional<Player> purchaseWeapon(Long playerId, Long weaponId) throws Exception {
         // check that weapon exists
-        Weapon w = weaponRepository.findById(weaponId).orElseThrow();
-        Player p = playerRepository.findById(playerId).orElseThrow();
+        Weapon w = weaponRepository.findById(weaponId)
+                .orElseThrow(NoSuchWeaponException::new);
+        Player p = playerRepository.findById(playerId)
+                .orElseThrow(NoSuchPlayerException::new);
 
         // check that player does not already have this weapon pair
         if (playerWeaponRepository.existsPlayerWeaponsByPlayerAndWeapon(p, w)) {
-            throw new Exception();
+            throw new BadRequestException(String.format("Player %s already owned weapon %s",
+                    p.getUsername(), w.getWeaponName()));
         }
 
         playerWeaponRepository.save(PlayerWeapon.builder()

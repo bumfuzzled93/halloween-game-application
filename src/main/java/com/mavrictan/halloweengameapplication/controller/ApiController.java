@@ -40,6 +40,7 @@ public class ApiController {
 
     @RequestMapping(value = "/createPlayer", method = RequestMethod.POST)
     public ResponseEntity<?> createPlayer(@RequestParam String playerUsername,
+                                          @RequestParam String password,
                                           @RequestParam String mobileNumber,
                                           @RequestParam String email) {
         return playerService.createPlayer(playerUsername, mobileNumber, email)

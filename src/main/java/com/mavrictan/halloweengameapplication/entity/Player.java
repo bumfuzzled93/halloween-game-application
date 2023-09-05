@@ -1,5 +1,6 @@
 package com.mavrictan.halloweengameapplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,12 +16,16 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String username;
-    private String mobileNumber;
-    private String email;
-    private int credits;
 
+    // @JsonIgnore
+    // private String password;
+    @JsonIgnore
+    private String mobileNumber;
+    @JsonIgnore
+    private String email;
+
+    private int credits;
     private int powerupAmmoBox;
     private int powerupDrone;
     private int powerupBonus;
