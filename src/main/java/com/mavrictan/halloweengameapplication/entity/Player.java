@@ -18,8 +18,8 @@ public class Player {
     private long id;
     private String username;
 
-    // @JsonIgnore
-    // private String password;
+    @JsonIgnore
+    private String password;
     @JsonIgnore
     private String mobileNumber;
     @JsonIgnore

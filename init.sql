@@ -138,4 +138,7 @@ values (1, 'Black hole Garlic'),
        (5, 'Electric explosion gun'),
        (5, 'Tornado Gun');
 
+ALTER TABLE `player`
+    ADD COLUMN `password` varchar(40) AFTER `username`
+
 

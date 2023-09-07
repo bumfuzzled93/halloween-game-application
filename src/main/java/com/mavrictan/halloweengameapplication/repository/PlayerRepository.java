@@ -18,8 +18,11 @@ public interface PlayerRepository extends PagingAndSortingRepository<Player, Lon
 
     Optional<Player> findByMobileNumber(String mobileNumber);
 
+    Optional<Player> findByEmail(String email);
+
     @Query("select p from Player p where p.id in :ids")
     List<Player> findByIds(@Param("ids") List<Long> postIdsList);
 
     boolean existsByMobileNumberOrEmail(String mobileNumber, String email);
+
 }

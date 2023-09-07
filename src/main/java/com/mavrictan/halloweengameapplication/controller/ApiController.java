@@ -3,9 +3,11 @@ package com.mavrictan.halloweengameapplication.controller;
 import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.service.GameService;
 import com.mavrictan.halloweengameapplication.service.PlayerService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,14 +40,32 @@ public class ApiController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @RequestMapping(value = "/getPlayerByEmail", method = RequestMethod.GET)
+    public ResponseEntity<?> getPlayerByEmail(@RequestParam String email) {
+        return playerService.getPlayerByEmail(email)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @RequestMapping(value = "/createPlayer", method = RequestMethod.POST)
     public ResponseEntity<?> createPlayer(@RequestParam String playerUsername,
                                           @RequestParam String password,
                                           @RequestParam String mobileNumber,
                                           @RequestParam String email) {
-        return playerService.createPlayer(playerUsername, mobileNumber, email)
+        return playerService.createPlayer(playerUsername, password, mobileNumber, email)
                 .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
+
+    @RequestMapping(value = "/resetPlayerPassword", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> resetPlayerPassword(@RequestParam long playerId,
+                                                 @RequestParam String newPassword,
+                                                 @Parameter(name = "otp",
+                                                         description = "One time Password - any string of length 6 for now",
+                                                         example = "123456")
+                                                 @RequestParam String otp) {
+        playerService.resetPlayerPassword(playerId, newPassword, otp);
+        return ResponseEntity.ok("Password has been reset");
     }
 
     @RequestMapping(value = "/createGame", method = RequestMethod.POST)
@@ -75,14 +95,11 @@ public class ApiController {
                 .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-//
-//    @RequestMapping(value = "/equipLoadout", method = RequestMethod.POST)
-//    public ResponseEntity<Player> equipLoadout(@RequestParam Long playerId, @RequestParam Long weaponId) {
-//        return ResponseEntity.ok(playerRepository.findById(playerId).get());
-//    }
-//
-//    @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
-//    public ResponseEntity<Player> upgradeWeapon(@RequestParam Long playerId, @RequestParam Long weaponId) {
-//        return ResponseEntity.ok(playerRepository.findById(playerId).get());
-//    }
+
+    @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
+    public ResponseEntity<?> upgradeWeapon(@RequestParam Long playerId, @RequestParam Long weaponId) {
+        return playerService.upgradeWeapon(playerId, weaponId)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
 }
