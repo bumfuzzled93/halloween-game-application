@@ -20,6 +20,8 @@ public interface PlayerRepository extends PagingAndSortingRepository<Player, Lon
 
     Optional<Player> findByEmail(String email);
 
+    Optional<Player> findByUsernameAndPassword(String username, String password);
+
     @Query("select p from Player p where p.id in :ids")
     List<Player> findByIds(@Param("ids") List<Long> postIdsList);
 

@@ -26,6 +26,7 @@ public class Player {
     private String email;
 
     private int credits;
+    private int score;
     private int powerupAmmoBox;
     private int powerupDrone;
     private int powerupBonus;
@@ -35,4 +36,11 @@ public class Player {
     @OneToMany(mappedBy = "player")
     @Singular
     private List<PlayerWeapon> purchasedWeapons;
+
+    public enum PowerUp {
+        AMMO_BOX,
+        DRONE,
+        BONUS,
+    }
 }
+

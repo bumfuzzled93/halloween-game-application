@@ -122,4 +122,36 @@ public class PlayerService {
 
         playerRepository.save(p);
     }
+
+    @SneakyThrows
+    public Optional<Player> login(String playerUsername, String md5Password) {
+        if (!md5Password.matches("[A-F0-9]{32}")) {
+            throw new BadRequestException("Invalid password");
+        }
+
+        return Optional.ofNullable(playerRepository.findByUsernameAndPassword(playerUsername, md5Password)
+                .orElseThrow(NoSuchPlayerException::new));
+    }
+
+    @SneakyThrows
+    public Optional<Player> purchasePowerUp(long playerId, Player.PowerUp powerUp, int qty) {
+        if (qty <= 0) {
+            throw new BadRequestException("Invalid quantity - must be more than zero");
+        }
+
+        Player p = playerRepository.findById(playerId)
+                .orElseThrow(NoSuchPlayerException::new);
+
+        if (powerUp == Player.PowerUp.DRONE) {
+            p.setPowerupDrone(p.getPowerupDrone() + qty);
+        }
+        if (powerUp == Player.PowerUp.AMMO_BOX) {
+            p.setPowerupAmmoBox(p.getPowerupAmmoBox() + qty);
+        }
+        if (powerUp == Player.PowerUp.BONUS) {
+            p.setPowerupBonus(p.getPowerupBonus() + qty);
+        }
+
+        return Optional.of(playerRepository.save(p));
+    }
 }

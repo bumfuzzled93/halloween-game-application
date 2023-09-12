@@ -51,7 +51,7 @@ public class GameService {
         List<Player> playerList = playerRepository.findByIds(playerIds);
 
         for (Player p : playerList) {
-            p.setCredits(p.getCredits() + score);
+            p.setScore(p.getScore() + score);
             playerRepository.save(p);
         }
 
