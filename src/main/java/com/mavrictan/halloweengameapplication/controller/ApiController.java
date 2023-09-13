@@ -4,9 +4,11 @@ import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.service.GameService;
 import com.mavrictan.halloweengameapplication.service.PlayerService;
+import com.mavrictan.halloweengameapplication.service.RedemptionService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class ApiController {
     private PlayerService playerService;
 
     private GameService gameService;
+
+    private RedemptionService redemptionService;
 
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
@@ -131,14 +136,17 @@ public class ApiController {
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
+    @SneakyThrows
     @Tag(name = "4. Redeem api")
-    @RequestMapping(value = "/redeemCredits", method = RequestMethod.POST)
-    public ResponseEntity<?> redeemCredits(@RequestParam Long playerId, @RequestParam Player.PowerUp powerUp, @RequestParam int quantity) {
-        return playerService.purchasePowerUp(playerId, powerUp, quantity)
-                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+    @RequestMapping(value = "/redeemCredits", method = RequestMethod.POST, consumes = "multipart/form-data")
+    public ResponseEntity<?> redeemCredits(@RequestParam String playerUsername,
+                                           @RequestParam long staffId,
+                                           @RequestParam int creditsIssued,
+                                           @RequestParam MultipartFile image) {
+        return redemptionService.awardPointsToPlayer(playerUsername, staffId, creditsIssued, image.getBytes())
+                .map(redemption -> new ResponseEntity<>(redemption, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
-
 
     @Tag(name = "4. Redeem api")
     @RequestMapping(value = "/redeemVoucher", method = RequestMethod.POST)

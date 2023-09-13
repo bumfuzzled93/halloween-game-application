@@ -27,6 +27,8 @@ public class PlayerService {
 
     WeaponRepository weaponRepository;
 
+    VoucherService voucherService;
+
     @SneakyThrows
     public Optional<Player> createPlayer(String username, String password, String mobileNumber, String email) {
         if (playerRepository.existsByMobileNumberOrEmail(mobileNumber, email)) {
@@ -153,5 +155,18 @@ public class PlayerService {
         }
 
         return Optional.of(playerRepository.save(p));
+    }
+
+    public Optional<Player> updatePlayerCredits(String playerUsername, int creditsIssued) {
+        Player player = playerRepository.findByUsername(playerUsername).orElseThrow(() -> new BadRequestException("No such player"));
+
+        player.setCredits(player.getCredits() + creditsIssued);
+
+        // if credits more than 5000 award voucher
+        if (player.getCredits() >= 5000) {
+            voucherService.createFirstTime(player.getId(), 10);
+        }
+
+        return Optional.of(playerRepository.save(player));
     }
 }

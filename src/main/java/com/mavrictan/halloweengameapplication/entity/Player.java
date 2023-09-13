@@ -25,7 +25,7 @@ public class Player {
     @JsonIgnore
     private String email;
 
-    private int credits;
+    private double credits;
     private int score;
     private int powerupAmmoBox;
     private int powerupDrone;
