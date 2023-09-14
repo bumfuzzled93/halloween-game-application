@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -168,5 +170,15 @@ public class PlayerService {
         }
 
         return Optional.of(playerRepository.save(player));
+    }
+
+    public List<Weapon> getPurchaseableWeapons(Long playerId) {
+        Set<Long> purchasedPlayerWeaponIds = playerWeaponRepository.findByPlayerId(playerId).stream()
+                .map(pw -> pw.getWeapon().getId())
+                .collect(Collectors.toSet());
+
+        return weaponRepository.findWeaponByUpgradeEquals(1).stream()
+                .filter(w -> !purchasedPlayerWeaponIds.contains(w.getId()))
+                .collect(Collectors.toList());
     }
 }

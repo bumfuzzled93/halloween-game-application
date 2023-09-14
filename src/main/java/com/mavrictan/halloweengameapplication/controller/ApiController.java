@@ -2,6 +2,7 @@ package com.mavrictan.halloweengameapplication.controller;
 
 import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.entity.Player;
+import com.mavrictan.halloweengameapplication.entity.Weapon;
 import com.mavrictan.halloweengameapplication.service.GameService;
 import com.mavrictan.halloweengameapplication.service.PlayerService;
 import com.mavrictan.halloweengameapplication.service.RedemptionService;
@@ -119,6 +120,19 @@ public class ApiController {
                 .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @Tag(name = "4. Store api")
+    @RequestMapping(value = "/getPurchaseableWeapons", method = RequestMethod.POST)
+    public ResponseEntity<?> getPurchaseableWeapons(@RequestParam Long playerId) throws Exception {
+        List<Weapon> purchaseableWeapons = playerService.getPurchaseableWeapons(playerId);
+
+        if (purchaseableWeapons.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(purchaseableWeapons, HttpStatus.OK);
+    }
+
 
     @Tag(name = "4. Store api")
     @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
