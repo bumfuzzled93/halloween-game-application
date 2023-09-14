@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Player {
 
     @Id
@@ -33,7 +34,7 @@ public class Player {
 
     private boolean starterPackClaimed;
 
-    @OneToMany(mappedBy = "player")
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Singular
     private List<PlayerWeapon> purchasedWeapons;
 

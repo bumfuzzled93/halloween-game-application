@@ -89,6 +89,15 @@ public class ApiController {
         return ResponseEntity.ok("Password has been reset");
     }
 
+    @Tag(name = "2. Player api")
+    @RequestMapping(value = "/equipWeapon", method = RequestMethod.POST)
+    public ResponseEntity<?> equipWeapon(@RequestParam long playerId,
+                                         @RequestParam long weaponId) {
+        return playerService.equipWeapon(playerId, weaponId)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
+
     @Tag(name = "3. Game api")
     @RequestMapping(value = "/createGame", method = RequestMethod.POST)
     public ResponseEntity<Game> createGame(String photonId) {

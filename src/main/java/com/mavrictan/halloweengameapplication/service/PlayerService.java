@@ -181,4 +181,24 @@ public class PlayerService {
                 .filter(w -> !purchasedPlayerWeaponIds.contains(w.getId()))
                 .collect(Collectors.toList());
     }
+
+    public Optional<Player> equipWeapon(long playerId, long weaponId) {
+        Player p = playerRepository.findById(playerId).orElseThrow(NoSuchPlayerException::new);
+
+        System.out.println("checking weapons");
+        List<PlayerWeapon> playerWeapons = p.getPurchasedWeapons().stream()
+                .filter(pw -> pw.getWeapon().getId() == weaponId)
+                .toList();
+
+        if (playerWeapons.isEmpty()) {
+            throw new BadRequestException("Player does not own this weapon");
+        }
+
+        p.getPurchasedWeapons().forEach(pw -> pw.setEquipped(false));
+        playerWeapons.get(0).setEquipped(true);
+
+        playerRepository.save(p);
+
+        return playerRepository.findById(playerId);
+    }
 }
