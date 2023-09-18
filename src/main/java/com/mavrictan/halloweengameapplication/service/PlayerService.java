@@ -2,6 +2,7 @@ package com.mavrictan.halloweengameapplication.service;
 
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.PlayerWeapon;
+import com.mavrictan.halloweengameapplication.entity.Voucher;
 import com.mavrictan.halloweengameapplication.entity.Weapon;
 import com.mavrictan.halloweengameapplication.exception.BadRequestException;
 import com.mavrictan.halloweengameapplication.exception.DuplicatedEntityException;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -80,6 +82,7 @@ public class PlayerService {
         Player p = playerRepository.findById(playerId)
                 .orElseThrow(NoSuchPlayerException::new);
 
+        System.out.println("aaa");
         // check that player does not already have this weapon pair
         if (playerWeaponRepository.existsPlayerWeaponsByPlayerAndWeapon(p, w)) {
             throw new BadRequestException(String.format("Player %s already owned weapon %s",
@@ -200,5 +203,15 @@ public class PlayerService {
         playerRepository.save(p);
 
         return playerRepository.findById(playerId);
+    }
+
+    public List<Weapon> getPlayerWeapons(long playerId) {
+        Player p = playerRepository.findById(playerId).orElseThrow(NoSuchPlayerException::new);
+
+        return p.getPurchasedWeapons().stream().map(PlayerWeapon::getWeapon).collect(Collectors.toList());
+    }
+
+    public List<Voucher> getPlayerVouchers(long playerId) {
+        return Collections.emptyList();
     }
 }

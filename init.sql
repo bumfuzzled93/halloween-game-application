@@ -17,7 +17,7 @@ CREATE TABLE `game`
     PRIMARY KEY (`id`),
     UNIQUE KEY `photon_id` (`photon_id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -41,7 +41,7 @@ CREATE TABLE `player`
     UNIQUE KEY `mobile_number` (`mobile_number`),
     UNIQUE KEY `email` (`email`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 7
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -57,7 +57,7 @@ CREATE TABLE `staff`
     `update_timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -72,7 +72,7 @@ CREATE TABLE `weapon`
     `cost` int NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 56
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -108,7 +108,7 @@ CREATE TABLE `player_weapon`
     CONSTRAINT `player_weapon_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`),
     CONSTRAINT `player_weapon_ibfk_2` FOREIGN KEY (`weapon_id`) REFERENCES `weapon` (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 8
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -123,14 +123,14 @@ CREATE TABLE `redemption`
     `photo_path`         varchar(255)                        DEFAULT NULL,
     `credits_issued`     int                                 DEFAULT NULL,
     `redemption_status`  enum ('VALID','INVALID','REDEEMED') DEFAULT NULL,
-    `image_data`         blob,
+    `image_file_uuid` varchar(255),
     `create_timestamp`   timestamp NULL                      DEFAULT CURRENT_TIMESTAMP,
     `modified_timestamp` timestamp NULL                      DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `staff_id` (`staff_id`),
     CONSTRAINT `redemption_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -152,7 +152,21 @@ CREATE TABLE `voucher`
     KEY `player_id` (`player_id`),
     CONSTRAINT `voucher_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE `file`
+(
+    `id`                 int           NOT NULL AUTO_INCREMENT,
+    `uuid`               varchar(255)  NOT NULL,
+    `original_file_name` varchar(1024) NOT NULL,
+    `file_size`          int           NOT NULL,
+    `file_type`          varchar(255)  NOT NULL,
+    `data`               BLOB          NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
