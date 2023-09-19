@@ -163,7 +163,7 @@ CREATE TABLE `file`
     `original_file_name` varchar(1024) NOT NULL,
     `file_size`          int           NOT NULL,
     `file_type`          varchar(255)  NOT NULL,
-    `data`               BLOB          NOT NULL,
+    `data` MEDIUMBLOB NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
@@ -174,13 +174,30 @@ insert into staff (username, password)
 values ('admin', '1234');
 
 insert into weapon (upgrade, weapon_name)
-values (1, 'Black hole Garlic'),
-       (1, 'Basic Lethal Gun'),
+values (1, 'Basic Lethal Gun'),
        (1, 'Hyper Gun'),
        (1, 'Chain lightning  Gun'),
        (1, 'Basic Stun Gun'),
        (1, 'Electric explosion gun'),
        (1, 'Tornado Gun'),
+       (1, 'Basic Lethal Garlic'),
+       (1, 'Explosive garlic'),
+       (1, 'Fire zone garlic'),
+       (1, 'Basic Stun Garlic'),
+       (1, 'Time slow Garlic'),
+       (1, 'Black hole Garlic'),
+       (2, 'Basic Lethal Gun'),
+       (2, 'Hyper Gun'),
+       (2, 'Chain lightning  Gun'),
+       (2, 'Basic Stun Gun'),
+       (2, 'Electric explosion gun'),
+       (2, 'Tornado Gun'),
+       (2, 'Basic Lethal Gun'),
+       (2, 'Hyper Gun'),
+       (2, 'Chain lightning  Gun'),
+       (2, 'Basic Stun Gun'),
+       (2, 'Electric explosion gun'),
+       (2, 'Tornado Gun'),
        (2, 'Basic Lethal Garlic'),
        (2, 'Explosive garlic'),
        (2, 'Fire zone garlic'),
