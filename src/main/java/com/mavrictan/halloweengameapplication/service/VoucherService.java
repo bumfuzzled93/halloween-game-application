@@ -5,6 +5,7 @@ import com.mavrictan.halloweengameapplication.repository.VoucherRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +38,15 @@ public class VoucherService {
                 "Awarded on player getting to 5000");
     }
 
+    public List<Voucher> getVouchers(long playerId) {
+        return voucherRepository.findVoucherByPlayerId(playerId);
+    }
+
     public Optional<Voucher> redeemVoucher() {
         return null;
+    }
+
+    public boolean awardedFirstTime(long playerId) {
+        return voucherRepository.existsVoucherByPlayerIdAndType(playerId, Voucher.VoucherType.FIRST_TIME);
     }
 }

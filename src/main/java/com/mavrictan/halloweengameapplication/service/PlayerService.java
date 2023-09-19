@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -168,7 +167,7 @@ public class PlayerService {
         player.setCredits(player.getCredits() + creditsIssued);
 
         // if credits more than 5000 award voucher
-        if (player.getCredits() >= 5000) {
+        if (player.getCredits() >= 5000 && !voucherService.awardedFirstTime(player.getId())) {
             voucherService.createFirstTime(player.getId(), 10);
         }
 
@@ -212,6 +211,6 @@ public class PlayerService {
     }
 
     public List<Voucher> getPlayerVouchers(long playerId) {
-        return Collections.emptyList();
+        return voucherService.getVouchers(playerId);
     }
 }

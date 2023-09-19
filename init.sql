@@ -170,6 +170,8 @@ CREATE TABLE `file`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
+insert into staff (username, password)
+values ('admin', '1234');
 
 insert into weapon (upgrade, weapon_name)
 values (1, 'Black hole Garlic'),
