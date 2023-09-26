@@ -1,5 +1,6 @@
 package com.mavrictan.halloweengameapplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,5 +15,7 @@ public class Staff {
     private long id;
 
     private String username;
+
+    @JsonIgnore
     private String password;
 }

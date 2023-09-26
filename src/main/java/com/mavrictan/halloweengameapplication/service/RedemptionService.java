@@ -22,15 +22,14 @@ public class RedemptionService {
 
     VoucherService voucherService;
 
-
     FileService fileService;
 
-    public Optional<Redemption> awardPointsToPlayer(String playerUsername, long staffId, int creditsIssued, MultipartFile imageData) throws IOException {
+    public Optional<Redemption> awardPointsToPlayer(long playerId, long staffId, int creditsIssued, MultipartFile imageData) throws IOException {
         if (creditsIssued <= 0) {
             throw new BadRequestException("Credits issued cannot be negative");
         }
 
-        Player player = playerService.updatePlayerCredits(playerUsername, creditsIssued).orElseThrow(
+        Player player = playerService.updatePlayerCredits(playerId, creditsIssued).orElseThrow(
                 () -> new BadRequestException("Failed to update player credits"));
 
         File storeFile = fileService.store(imageData);

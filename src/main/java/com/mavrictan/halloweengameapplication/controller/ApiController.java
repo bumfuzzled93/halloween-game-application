@@ -3,10 +3,7 @@ package com.mavrictan.halloweengameapplication.controller;
 import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.Weapon;
-import com.mavrictan.halloweengameapplication.service.FileService;
-import com.mavrictan.halloweengameapplication.service.GameService;
-import com.mavrictan.halloweengameapplication.service.PlayerService;
-import com.mavrictan.halloweengameapplication.service.RedemptionService;
+import com.mavrictan.halloweengameapplication.service.*;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -18,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLOutput;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "1. API")
@@ -33,6 +32,10 @@ public class ApiController {
     private RedemptionService redemptionService;
 
     private FileService fileService;
+
+    private StaffService staffService;
+
+    private VoucherService voucherService;
 
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
@@ -96,6 +99,17 @@ public class ApiController {
         return new ResponseEntity<>(playerService.getPlayerWeapons(playerId), HttpStatus.OK);
     }
 
+    @Tag(name = "4. Store api")
+    @RequestMapping(value = "/getPlayerWeaponsSimplified", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> getPlayerWeaponsSimplified(@RequestParam Long playerId) throws Exception {
+        List<Weapon> weapons = playerService.getPlayerWeapons(playerId);
+
+        return ResponseEntity.ok(weapons.stream()
+                .map(weapon -> String.format("%d,%d,%s", weapon.getId(), weapon.getUpgrade(), weapon.getWeaponName()))
+                .collect(Collectors.joining(";")));
+    }
+
+
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/equipWeapon", method = RequestMethod.POST)
     public ResponseEntity<?> equipWeapon(@RequestParam long playerId,
@@ -155,6 +169,21 @@ public class ApiController {
         return new ResponseEntity<>(purchaseableWeapons, HttpStatus.OK);
     }
 
+    @Tag(name = "4. Store api")
+    @RequestMapping(value = "/getPurchaseableWeaponsSimplified", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> getPurchaseableWeaponsSimplified(@RequestParam Long playerId) throws Exception {
+        List<Weapon> purchaseableWeapons = playerService.getPurchaseableWeapons(playerId);
+
+        if (purchaseableWeapons.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(purchaseableWeapons.stream()
+                    .map(weapon -> String.format("%d,%d,%s",weapon.getId(), weapon.getUpgrade(), weapon.getWeaponName()))
+                    .collect(Collectors.joining(";")),
+                HttpStatus.OK);
+    }
+
 
     @Tag(name = "4. Store api")
     @RequestMapping(value = "/upgradeWeapon", method = RequestMethod.POST)
@@ -175,21 +204,21 @@ public class ApiController {
     @SneakyThrows
     @Tag(name = "4. Redeem api")
     @RequestMapping(value = "/redeemCredits", method = RequestMethod.POST, consumes = "multipart/form-data")
-    public ResponseEntity<?> redeemCredits(@RequestParam String playerUsername,
+    public ResponseEntity<?> redeemCredits(@RequestParam long playerId,
                                            @RequestParam long staffId,
                                            @RequestParam int creditsIssued,
                                            @RequestParam MultipartFile receiptImage) {
-        return redemptionService.awardPointsToPlayer(playerUsername, staffId, creditsIssued, receiptImage)
+        return redemptionService.awardPointsToPlayer(playerId, staffId, creditsIssued, receiptImage)
                 .map(redemption -> new ResponseEntity<>(redemption, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @Tag(name = "4. Redeem api")
     @RequestMapping(value = "/redeemVoucher", method = RequestMethod.POST)
-    public ResponseEntity<?> redeemVoucher(@RequestParam Long playerId, @RequestParam Player.PowerUp powerUp, @RequestParam int quantity) {
-        return playerService.purchasePowerUp(playerId, powerUp, quantity)
-                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    public ResponseEntity<?> redeemVoucher(@RequestParam String voucherUuid) {
+        return voucherService.redeemVoucher(voucherUuid)
+                .map(voucher -> new ResponseEntity<>(voucher, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Tag(name = "4. Redeem api")
@@ -200,5 +229,14 @@ public class ApiController {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalFileName() + "\"")
                         .body(file.getData()))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @Tag(name = "2. Player api")
+    @RequestMapping(value = "/validateStaff", method = RequestMethod.POST)
+    public ResponseEntity<?> validateStaff(@RequestParam String merchantUserName,
+                                            @RequestParam String md5password) {
+        return staffService.login(merchantUserName, md5password)
+                .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
 }

@@ -1,6 +1,7 @@
 package com.mavrictan.halloweengameapplication.service;
 
 import com.mavrictan.halloweengameapplication.entity.Voucher;
+import com.mavrictan.halloweengameapplication.exception.BadRequestException;
 import com.mavrictan.halloweengameapplication.repository.VoucherRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,8 +43,14 @@ public class VoucherService {
         return voucherRepository.findVoucherByPlayerId(playerId);
     }
 
-    public Optional<Voucher> redeemVoucher() {
-        return null;
+    public Optional<Voucher> redeemVoucher(String uuid) {
+        Voucher unusedVoucher = voucherRepository.findVoucherByVoucherUuid(uuid)
+                .filter(voucher -> voucher.getStatus() == Voucher.VoucherStatus.AWARDED)
+                .orElseThrow(() -> new BadRequestException("No valid voucher"));
+
+        unusedVoucher.setStatus(Voucher.VoucherStatus.USED);
+
+        return Optional.of(voucherRepository.save(unusedVoucher));
     }
 
     public boolean awardedFirstTime(long playerId) {

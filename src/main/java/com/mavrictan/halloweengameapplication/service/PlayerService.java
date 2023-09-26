@@ -161,12 +161,13 @@ public class PlayerService {
         return Optional.of(playerRepository.save(p));
     }
 
-    public Optional<Player> updatePlayerCredits(String playerUsername, int creditsIssued) {
-        Player player = playerRepository.findByUsername(playerUsername).orElseThrow(() -> new BadRequestException("No such player"));
+    public Optional<Player> updatePlayerCredits(long playerId, int creditsIssued) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new BadRequestException("No such player"));
 
         player.setCredits(player.getCredits() + creditsIssued);
 
         // if credits more than 5000 award voucher
+        System.out.println(player.getCredits());
         if (player.getCredits() >= 5000 && !voucherService.awardedFirstTime(player.getId())) {
             voucherService.createFirstTime(player.getId(), 10);
         }

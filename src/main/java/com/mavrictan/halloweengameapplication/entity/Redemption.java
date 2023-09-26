@@ -23,6 +23,5 @@ public class Redemption {
     private long playerId;
     private long staffId;
     private int creditsIssued;
-
     private String imageFileUuid;
 }
