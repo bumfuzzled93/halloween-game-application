@@ -1,9 +1,6 @@
 package com.mavrictan.halloweengameapplication.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,14 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Redemption {
-
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private long playerId;
-    private long staffId;
-    private int creditsIssued;
-    private String imageFileUuid;
+    private String uuid;
+
+    private String originalFileName;
+
+    private long fileSize;
+
+    private String fileType;
+
+    @Lob
+    private byte[] data;
 }

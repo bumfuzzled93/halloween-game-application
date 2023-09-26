@@ -5,11 +5,9 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({DuplicatedEntityException.class})
     public final ResponseEntity<ApiError> handleException(Exception ex) {
 
         if (ex instanceof DuplicatedEntityException) {
@@ -18,7 +16,8 @@ public class GlobalExceptionHandler {
 
             return handleUserNotFoundException(unfe, status);
         }
-        return new ResponseEntity<>(new ApiError("An error has occured"), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ApiError("An error has occured"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
