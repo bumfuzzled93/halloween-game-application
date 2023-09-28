@@ -5,6 +5,7 @@ import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.Redemption;
 import com.mavrictan.halloweengameapplication.exception.BadRequestException;
 import com.mavrictan.halloweengameapplication.repository.RedemptionRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ public class RedemptionService {
 
     FileService fileService;
 
+    @Transactional
     public Optional<Redemption> awardPointsToPlayer(long playerId, long staffId, int creditsIssued, MultipartFile imageData) throws IOException {
         if (creditsIssued <= 0) {
             throw new BadRequestException("Credits issued cannot be negative");
