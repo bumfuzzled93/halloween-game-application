@@ -231,6 +231,13 @@ public class ApiController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @SneakyThrows
+    @Tag(name = "4. Redeem api")
+    @GetMapping("/getRedemptionsByDate")
+    public ResponseEntity<?> getRedemptionsByDate(@RequestParam String date) {
+        return new ResponseEntity<>(redemptionService.getRedemptions(date), HttpStatus.OK);
+    }
+
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/validateStaff", method = RequestMethod.POST)
     public ResponseEntity<?> validateStaff(@RequestParam String merchantUserName,
@@ -239,4 +246,6 @@ public class ApiController {
                 .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
+
+
 }

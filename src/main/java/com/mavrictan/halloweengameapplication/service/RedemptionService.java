@@ -11,6 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,5 +49,20 @@ public class RedemptionService {
                 .creditsIssued(creditsIssued)
                 .imageFileUuid(storeFile.getUuid())
                 .build()));
+    }
+
+
+    @Transactional
+    public List<Redemption> getRedemptions(String date) throws IOException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Timestamp before = new Timestamp(dateFormat.parse(date).getTime() - (8 * 60 * 60 * 1000));
+            Timestamp after = new Timestamp(dateFormat.parse(date).getTime() + (16 * 60 * 60 * 1000));
+
+            return redemptionRepository.redemptionByDate(before.toString(), after.toString());
+        } catch (ParseException e) {
+            throw new BadRequestException("invalid date: " + date + ". Please use yyyy-MM-dd format.");
+        }
     }
 }
