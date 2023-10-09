@@ -51,12 +51,9 @@ public class RedemptionService {
                 .build()));
     }
 
-
-    @Transactional
     public List<Redemption> getRedemptions(String date) throws IOException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Timestamp before = new Timestamp(dateFormat.parse(date).getTime() - (8 * 60 * 60 * 1000));
             Timestamp after = new Timestamp(dateFormat.parse(date).getTime() + (16 * 60 * 60 * 1000));
 

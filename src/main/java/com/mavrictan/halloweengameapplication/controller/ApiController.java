@@ -1,5 +1,6 @@
 package com.mavrictan.halloweengameapplication.controller;
 
+import com.mavrictan.halloweengameapplication.config.ApplicationConfiguration;
 import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.Weapon;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,8 @@ public class ApiController {
     private StaffService staffService;
 
     private VoucherService voucherService;
+
+    private ApplicationConfiguration applicationConfiguration;
 
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
@@ -235,7 +237,9 @@ public class ApiController {
     @Tag(name = "4. Redeem api")
     @GetMapping("/getRedemptionsByDate")
     public ResponseEntity<?> getRedemptionsByDate(@RequestParam String date) {
-        return new ResponseEntity<>(redemptionService.getRedemptions(date), HttpStatus.OK);
+        return new ResponseEntity<>(redemptionService.getRedemptions(date).stream().map(
+                redemption -> redemption.withFileDownloadUrl(applicationConfiguration.getURL_PREFIX() + redemption.getImageFileUuid())),
+                HttpStatus.OK);
     }
 
     @Tag(name = "2. Player api")

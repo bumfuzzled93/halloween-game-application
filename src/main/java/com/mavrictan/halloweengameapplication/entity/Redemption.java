@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,5 +28,6 @@ public class Redemption {
     private LocalDateTime modifiedTimestamp;
 
     @Transient
-    private String fileDownloadUrl = "aaa";
+    @With
+    private String fileDownloadUrl;
 }
