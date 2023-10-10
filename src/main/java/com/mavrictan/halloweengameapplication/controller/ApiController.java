@@ -255,8 +255,6 @@ public class ApiController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + date + ".csv" + "\"")
                 .body(redemptionService.getRedemptionsCSV(date).getBytes());
-//        return new ResponseEntity<>(redemptionService.getRedemptionsCSV(date),
-//                HttpStatus.OK);
     }
 
     @Tag(name = "2. Player api")
