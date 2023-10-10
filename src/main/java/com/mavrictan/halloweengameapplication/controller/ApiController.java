@@ -37,7 +37,6 @@ public class ApiController {
 
     private VoucherService voucherService;
 
-    private ApplicationConfiguration applicationConfiguration;
 
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
@@ -236,10 +235,28 @@ public class ApiController {
     @SneakyThrows
     @Tag(name = "4. Redeem api")
     @GetMapping("/getRedemptionsByDate")
-    public ResponseEntity<?> getRedemptionsByDate(@RequestParam String date) {
-        return new ResponseEntity<>(redemptionService.getRedemptions(date).stream().map(
-                redemption -> redemption.withFileDownloadUrl(applicationConfiguration.getURL_PREFIX() + redemption.getImageFileUuid())),
+    public ResponseEntity<?> getRedemptionsByDate(
+            @Parameter(name = "date",
+                    description = "date format YYYY-MM-DD, redemptions are in UTC timezone",
+                    example = "2023-10-04")
+            @RequestParam String date) {
+        return new ResponseEntity<>(redemptionService.getRedemptions(date),
                 HttpStatus.OK);
+    }
+
+    @SneakyThrows
+    @Tag(name = "4. Redeem api")
+    @GetMapping("/getRedemptionsByDateCSV")
+    public ResponseEntity<byte[]> getRedemptionsByDateCSV(
+            @Parameter(name = "date",
+                    description = "date format YYYY-MM-DD, redemptions are in UTC timezone",
+                    example = "2023-10-04")
+            @RequestParam String date) {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + date + ".csv" + "\"")
+                .body(redemptionService.getRedemptionsCSV(date).getBytes());
+//        return new ResponseEntity<>(redemptionService.getRedemptionsCSV(date),
+//                HttpStatus.OK);
     }
 
     @Tag(name = "2. Player api")

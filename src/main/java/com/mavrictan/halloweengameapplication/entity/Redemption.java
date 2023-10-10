@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +26,10 @@ public class Redemption {
     private long staffId;
     private int creditsIssued;
     private String imageFileUuid;
+
+    @CreationTimestamp
     private LocalDateTime createTimestamp;
+    @UpdateTimestamp
     private LocalDateTime modifiedTimestamp;
 
     @Transient
