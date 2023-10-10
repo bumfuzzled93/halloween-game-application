@@ -1,5 +1,6 @@
 package com.mavrictan.halloweengameapplication.controller;
 
+import com.mavrictan.halloweengameapplication.config.ApplicationConfiguration;
 import com.mavrictan.halloweengameapplication.entity.Game;
 import com.mavrictan.halloweengameapplication.entity.Player;
 import com.mavrictan.halloweengameapplication.entity.Weapon;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,7 @@ public class ApiController {
     private StaffService staffService;
 
     private VoucherService voucherService;
+
 
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/getPlayerByUsername", method = RequestMethod.GET)
@@ -231,6 +232,31 @@ public class ApiController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @SneakyThrows
+    @Tag(name = "4. Redeem api")
+    @GetMapping("/getRedemptionsByDate")
+    public ResponseEntity<?> getRedemptionsByDate(
+            @Parameter(name = "date",
+                    description = "date format YYYY-MM-DD, redemptions are in UTC timezone",
+                    example = "2023-10-04")
+            @RequestParam String date) {
+        return new ResponseEntity<>(redemptionService.getRedemptions(date),
+                HttpStatus.OK);
+    }
+
+    @SneakyThrows
+    @Tag(name = "4. Redeem api")
+    @GetMapping("/getRedemptionsByDateCSV")
+    public ResponseEntity<byte[]> getRedemptionsByDateCSV(
+            @Parameter(name = "date",
+                    description = "date format YYYY-MM-DD, redemptions are in UTC timezone",
+                    example = "2023-10-04")
+            @RequestParam String date) {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + date + ".csv" + "\"")
+                .body(redemptionService.getRedemptionsCSV(date).getBytes());
+    }
+
     @Tag(name = "2. Player api")
     @RequestMapping(value = "/validateStaff", method = RequestMethod.POST)
     public ResponseEntity<?> validateStaff(@RequestParam String merchantUserName,
@@ -239,4 +265,6 @@ public class ApiController {
                 .map(player -> new ResponseEntity<>(player, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
+
+
 }

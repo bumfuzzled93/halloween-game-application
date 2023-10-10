@@ -12,6 +12,7 @@ import com.mavrictan.halloweengameapplication.repository.PlayerRepository;
 import com.mavrictan.halloweengameapplication.repository.PlayerWeaponRepository;
 import com.mavrictan.halloweengameapplication.repository.WeaponRepository;
 import com.mavrictan.halloweengameapplication.util.Security;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -74,6 +75,7 @@ public class PlayerService {
                 }).orElseThrow(NoSuchPlayerException::new));
     }
 
+    @Transactional
     public Optional<Player> purchaseWeapon(Long playerId, Long weaponId) throws Exception {
         // check that weapon exists
         Weapon w = weaponRepository.findById(weaponId)
@@ -81,12 +83,23 @@ public class PlayerService {
         Player p = playerRepository.findById(playerId)
                 .orElseThrow(NoSuchPlayerException::new);
 
-        System.out.println("aaa");
+        if(w.getUpgrade() != 1) {
+            throw new BadRequestException("You cannot purchase weapon that are not level 1. Upgrade them instead");
+        }
+
+        if(p.getCredits() < w.getCost()) {
+            throw new BadRequestException(String.format("Player %s doest not have enough credits for weapon %s",
+                    p.getUsername(), w.getWeaponName()));
+        }
+
         // check that player does not already have this weapon pair
         if (playerWeaponRepository.existsPlayerWeaponsByPlayerAndWeapon(p, w)) {
             throw new BadRequestException(String.format("Player %s already owned weapon %s",
                     p.getUsername(), w.getWeaponName()));
         }
+
+        p.setCredits(p.getCredits() - w.getCost());
+        playerRepository.save(p);
 
         playerWeaponRepository.save(PlayerWeapon.builder()
                 .weapon(w)
@@ -99,20 +112,29 @@ public class PlayerService {
     public Optional<Player> upgradeWeapon(Long playerId, Long weaponId) {
         PlayerWeapon pw = playerWeaponRepository.findByPlayerIdAndWeaponId(playerId, weaponId)
                 .orElseThrow(() -> new BadRequestException(
-                        String.format("No combination for playerid : %d and weaponId: %d", playerId, weaponId)));
+                        String.format("No combination for playerId : %d and weaponId: %d", playerId, weaponId)));
 
         // check that weapon exists
         Weapon w = weaponRepository.findById(weaponId)
                 .orElseThrow(NoSuchWeaponException::new);
 
-        // validate upgrade level not more than 5
-        pw.setWeapon(weaponRepository
+        Weapon nextUpgrade = weaponRepository
                 .findByWeaponNameAndUpgrade(w.getWeaponName(), w.getUpgrade() + 1)
-                .orElseThrow(() -> new BadRequestException("Weapon cannot be upgraded further")));
+                .orElseThrow(() -> new BadRequestException("Weapon cannot be upgraded further"));
+
+        Player player = playerRepository.findById(playerId).orElseThrow(NoSuchPlayerException::new);
+
+        if(player.getCredits() < nextUpgrade.getCost()) {
+            throw new BadRequestException("Player cannot afford to upgrade weapon");
+        } else {
+            player.setCredits(player.getCredits() - nextUpgrade.getCost());
+        }
+
+        pw.setWeapon(nextUpgrade);
 
         playerWeaponRepository.save(pw);
 
-        return playerRepository.findById(playerId);
+        return Optional.of(playerRepository.save(player));
     }
 
     @SneakyThrows
@@ -147,6 +169,12 @@ public class PlayerService {
 
         Player p = playerRepository.findById(playerId)
                 .orElseThrow(NoSuchPlayerException::new);
+
+        if(p.getCredits() < 500) {
+            throw  new BadRequestException("Player cannot afford to purchase power up");
+        } else {
+            p.setCredits(p.getCredits() - 500);
+        }
 
         if (powerUp == Player.PowerUp.DRONE) {
             p.setPowerupDrone(p.getPowerupDrone() + qty);
